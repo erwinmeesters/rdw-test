@@ -1,7 +1,10 @@
 <template>
   <div class="section">
     <last-visited />
-    <router-link title="RDW" :to="'/'"> <i class="feather icon-arrow-left" />Terug naar overzicht </router-link>
+
+    <router-link title="RDW" :to="{ path: '/', query: route.query }">
+      <i class="feather icon-arrow-left" />Terug naar overzicht
+    </router-link>
     <div v-if="vehicle.length" class="overview">
       <div v-for="(row, index) in vehicle" :key="index" class="row">
         <span class="name">{{ row.name }}</span>
@@ -69,7 +72,8 @@ export default defineComponent({
     });
 
     return {
-      vehicle
+      vehicle,
+      route
     };
   }
 });

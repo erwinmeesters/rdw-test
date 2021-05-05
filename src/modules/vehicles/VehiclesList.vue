@@ -9,6 +9,8 @@
       :data="tableData"
       :model="tableModel"
       :fromTop="80"
+      :defaultSort="pagination.orderBy"
+      :defaultSortDirection="pagination.direction"
       @sorted="sortData"
       @reload="reloadData"
       @row-clicked="showVehicle"
@@ -90,11 +92,15 @@ export default defineComponent({
     }
 
     function showVehicle(event: any) {
+      const query = {
+        ...route.query
+      };
       router.push({
         name: 'vehicle',
         params: {
           id: event.kenteken
-        }
+        },
+        query
       });
     }
 

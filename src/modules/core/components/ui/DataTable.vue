@@ -110,6 +110,14 @@ export default defineComponent({
       type: Object,
       required: true
     },
+    defaultSort: {
+      type: String,
+      default: ''
+    },
+    defaultSortDirection: {
+      type: String,
+      default: 'default'
+    },
     emptyMessage: {
       type: String
     },
@@ -138,11 +146,11 @@ export default defineComponent({
     const selectedRows: any = ref([]);
     const clickedRow: any = ref(-1);
     const allRowsSelected = ref(false);
-    const sortedColumn = reactive({
-      id: '',
-      direction: 0
-    });
     const sortedDirections = ['default', 'asc', 'desc'];
+    const sortedColumn = reactive({
+      id: props.defaultSort,
+      direction: sortedDirections.indexOf(props.defaultSortDirection)
+    });
 
     const clearSelected: any = inject('clearSelectedRows', ref(false));
     watchEffect(() => {
