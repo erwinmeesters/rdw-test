@@ -1,17 +1,6 @@
 <template>
   <div class="nav">
-    <div class="nav-list">
-      <router-link v-slot="{ route }" :to="{ name: 'vehicles' }">
-        <div
-          class="nav-item"
-          :class="{
-            'router-link-active': $route.path.startsWith(route.path)
-          }"
-        >
-          <span>Vehicles</span>
-        </div>
-      </router-link>
-    </div>
+    <div class="nav-list"></div>
   </div>
 </template>
 

@@ -53,6 +53,7 @@ export default {
 }
 .swatches {
   display: flex;
+  flex-flow: row wrap;
 }
 .swatch {
   height: 25px;

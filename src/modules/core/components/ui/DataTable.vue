@@ -1,6 +1,6 @@
 <template>
-  <div class="table">
-    <div v-if="!noRecords" class="table-head" :style="{ top: `${fromTop}px` }">
+  <div v-if="renderedData.length" class="table">
+    <div class="table-head" :style="{ top: `${fromTop}px` }">
       <div class="table-row">
         <span v-if="isSelectable" :style="{ 'max-width': '50px' }" class="table-col">
           <check-box @input="selectAllRows($event)" :checked="isAllChecked()" />
@@ -9,15 +9,14 @@
         <span
           v-for="(col, index) in tableHead"
           :key="index"
-          :style="{ 'min-width': setWidth(col?.options) }"
-          :class="setClasses(col?.options)"
+          :style="{ 'min-width': setWidth(col.options) }"
+          :class="setClasses(col.options)"
           @click.stop="sort(col)"
           class="table-col"
-        >
-          <div>
-            {{ col.value }}
-            <span v-if="col.options?.sortable" class="sorting-icon">
-              <span v-if="sortedColumn.id === col.options?.sortable">
+          ><div class="table-col-head">
+            <span>{{ col.value }}</span>
+            <span v-if="col.options.sortable" class="sorting-icon">
+              <span v-if="sortedColumn.id === col.options.sortable">
                 <span v-if="sortedColumn.direction === 0" class="sorting-neutral">
                   <i class="feather icon-arrow-down" />
                   <i class="feather icon-arrow-up" />
@@ -49,33 +48,26 @@
           <span v-if="isSelectable" :style="{ 'max-width': '50px' }" @click.stop class="table-col">
             <check-box @input="rowClicked('rows-checked', i, $event)" :checked="isChecked(i)" />
           </span>
+
           <span
-            v-for="(col, key) in row.main || row.columns"
+            v-for="(col, key) in row.main"
             :key="key"
             :style="{ 'min-width': setWidth(col.options) }"
             :class="setClasses(col.options)"
             class="table-col"
           >
-            <i v-if="col.options.class && col.options.isIcon" :class="[col.options.class, 'table-icon']" />
+            <i v-if="col.options.class" :class="[col.options.class, 'table-icon']" />
             <div
               v-for="(item, k) in col.value"
               :key="k"
-              :class="[
-                col.options.class,
-                {
-                  'is-success': col.options.alias && item,
-                  'is-danger': col.options.alias && !item,
-                  'has-text-weight-semibold': col.value.length > 1 && k === 0,
-                  summary: col.value.length > 1 && k
-                }
-              ]"
+              :class="{
+                'has-text-weight-semibold': col.value.length > 1 && k === 0,
+                summary: col.value.length > 1 && k
+              }"
             >
               <image-thumb v-if="key === 'media'" :media="item" />
               <div v-else>
-                <span v-if="booleanValue(item)">
-                  <span v-if="col.options.alias">{{ col.alt }}</span>
-                  <i v-else :class="['feather has-text-weight-bold', booleanValue(item)]" />
-                </span>
+                <i v-if="booleanValue(item)" :class="['feather has-text-weight-bold', booleanValue(item)]" />
                 <div v-else>
                   <slot v-if="specialSlot && col.options.slot" name="special" :item="item" />
                   <div v-else class="summary-txt">{{ itemName(item, col.options) }}</div>
@@ -96,11 +88,10 @@
       </div>
     </div>
   </div>
-  <div v-if="noRecords">{{ emptyMessage }}</div>
+  <div v-else class="empty">{{ emptyMessage }}</div>
 </template>
 <script lang="ts">
-/* eslint-disable no-use-before-define */
-import { computed, defineComponent, inject, reactive, ref, watch, watchEffect, onBeforeMount } from 'vue';
+import { computed, defineComponent, inject, reactive, ref, watch, watchEffect } from 'vue';
 import CheckBox from './CheckBox';
 import ImageThumb from './ImageThumb';
 
@@ -109,6 +100,7 @@ export default defineComponent({
     CheckBox,
     ImageThumb
   },
+
   props: {
     data: {
       type: Array,
@@ -121,7 +113,6 @@ export default defineComponent({
     emptyMessage: {
       type: String
     },
-    noRecords: Boolean,
     fromTop: {
       type: Number,
       default: 0
@@ -138,8 +129,8 @@ export default defineComponent({
     const detailsSlot = computed(() => slots.details);
     const specialSlot = computed(() => slots.special);
     const tableData: any = computed(() => props.data);
+    console.log('tableData: ', tableData.value);
     const tableModel: any = computed(() => props.model);
-
     const renderedData: any = ref([]);
     const tableHead: any = ref({});
     const isClickable = ref(false);
@@ -161,22 +152,17 @@ export default defineComponent({
       }
     });
 
-    watch(
-      [tableData, tableModel],
-      ([data]) => {
-        if (data.length) {
-          renderedData.value = mapDataOnModel();
-        } else {
-          renderedData.value = Array(10).fill(props.model);
-        }
-      },
-      { immediate: true, deep: true }
-    );
-
-    watch(
-      () => props.noRecords,
-      value => (value ? (renderedData.value = []) : false)
-    );
+    watch([tableData, tableModel], ([data, model]) => {
+      if (Object.keys(model).length) {
+        tableHead.value = mapTableHead();
+        isClickable.value = tableModel.value.options.detailed ? false : tableModel.value.options.clickable;
+        isSelectable.value = tableModel.value.options.selectable;
+        isDetailed.value = tableModel.value.options.detailed;
+      }
+      if (data || data.length) {
+        renderedData.value = mapDataOnModel();
+      }
+    });
 
     function rowClicked(action: any, index: number, checked = false) {
       const data: any = tableData.value;
@@ -216,8 +202,7 @@ export default defineComponent({
     }
 
     function isAllChecked() {
-      // tableData.value.length === selectedRows.value.length || //
-      return allRowsSelected.value;
+      return tableData.value.length === selectedRows.value.length || allRowsSelected.value;
     }
 
     function mapTableHead() {
@@ -264,9 +249,6 @@ export default defineComponent({
           } else if (Object.keys(row).includes(prop.id)) {
             obj.main[prop.id].value = [row[prop.id]];
           }
-          if (Object.keys(row).includes(prop.options.alias)) {
-            obj.main[prop.id].alt = row[prop.options.alias];
-          }
         });
 
         output.push(obj);
@@ -284,20 +266,20 @@ export default defineComponent({
       if (options && options.classes) {
         classes.push(options.classes);
       }
-      if (options?.sortable) {
+      if (options.sortable) {
         classes.push('is-sortable');
       }
-      return classes.join(' ');
+      return classes.join(', ');
     }
 
     function sort(column: any) {
-      if (!column.options?.sortable) return;
+      if (!column.options.sortable) return;
 
       const output: any = {};
-      if (sortedColumn.id === column.options?.sortable) {
+      if (sortedColumn.id === column.options.sortable) {
         sortedColumn.direction = sortedColumn.direction !== 2 ? ++sortedColumn.direction : 0;
       } else {
-        sortedColumn.id = column.options?.sortable;
+        sortedColumn.id = column.options.sortable;
         sortedColumn.direction = 1;
       }
 
@@ -305,20 +287,11 @@ export default defineComponent({
       sortedColumn.direction ? emit('sorted', output) : emit('reload');
     }
 
-    function itemName(item: any | string): string {
-      const value = item;
+    function itemName(item: any | string, opt: any): string {
+      const value = opt.type === 'date' ? new Date(item) : item;
       // All possible item title properties //
       return value.name || value.label || value.title || value;
     }
-
-    onBeforeMount(() => {
-      if (Object.keys(props.model).length && !tableHead.value.length) {
-        tableHead.value = mapTableHead();
-        isClickable.value = tableModel.value.options.detailed ? false : tableModel.value.options.clickable;
-        isSelectable.value = tableModel.value.options.selectable;
-        isDetailed.value = tableModel.value.options.detailed;
-      }
-    });
 
     return {
       tableData,
@@ -353,7 +326,6 @@ export default defineComponent({
   display: flex;
   flex: 1 1 100%;
   flex-flow: row wrap;
-  width: 100%;
 }
 .table-head {
   font-weight: 700;
@@ -401,7 +373,6 @@ export default defineComponent({
   .table-body & {
     border-top: 1px solid $medgrey;
     min-height: 75px;
-    width: 100%;
   }
   &.is-clickable {
     cursor: pointer;
@@ -421,43 +392,10 @@ export default defineComponent({
   flex: 1;
   font-size: 1em;
   padding: 1em;
-  word-break: break-word;
-  animation: fade 0.3s;
+  overflow: hidden;
 
-  // &:after {
-  //   content: '';
-  //   position: absolute;
-  //   animation: none;
-  //   //opacity: 0;
-  //   //transition: opacity 0.3s linear;
-  // }
-  // .placeholder & {
-  //   position: relative;
-  //   padding: 0;
-  //   margin: 0 1em;
-  //   color: transparent;
-  //   &:after {
-  //     content: '';
-  //     opacity: 1;
-  //     top: 50%;
-  //     left: 0;
-  //     width: 100%;
-  //     height: 25px;
-  //     z-index: 1;
-  //     transform: translateY(-50%);
-  //     box-sizing: border-box;
-  //     background-image: linear-gradient(to right, $xlight 0%, $light 50%, $xlight);
-  //     animation: shine 3s linear infinite;
-  //   }
-  // }
-  &.summary {
-    width: 60%;
-    min-width: 0;
-    .summary-txt {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  .table-col-head {
+    display: flex;
   }
 }
 .action-btns {
@@ -477,20 +415,10 @@ export default defineComponent({
 .details-leave-to {
   animation: topslideout 0.2s;
 }
-@keyframes shine {
-  0% {
-    background-position: -50vw;
-  }
-  100% {
-    background-position: 50vw;
-  }
-}
-@keyframes fade {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
 }
 </style>

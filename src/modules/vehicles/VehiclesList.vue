@@ -1,5 +1,6 @@
 <template>
   <div class="section">
+    <last-visited />
     <div class="filters">
       <search placeholder="Zoeken..." :query="searchTerm" @onInput="setSearchTerm" @clear="clearSearchTerm" />
       <color-picker :colors="colors" @selection="setSearchTerm" />
@@ -11,10 +12,10 @@
       @sorted="sortData"
       @reload="reloadData"
       @row-clicked="showVehicle"
-      emptyMessage="No vehicles found"
+      emptyMessage="Geen data gevonden of beschikbaar... Herlaad de pagina of pas uw zoekcriteria aan."
     >
     </data-table>
-    <pager :pagination="pagination" @page-change="setPage" :showTotal="false" />
+    <pager v-if="tableData.length" :pagination="pagination" @page-change="setPage" :showTotal="false" />
   </div>
 </template>
 
@@ -28,13 +29,15 @@ import { useRoute } from 'vue-router';
 import router from '@/router';
 import Search from '@/modules/core/components/ui/Search';
 import ColorPicker from '@/modules/core/components/ui/ColorPicker';
+import LastVisited from './components/LastVisited';
 
 export default defineComponent({
   components: {
     DataTable,
     Pager,
     Search,
-    ColorPicker
+    ColorPicker,
+    LastVisited
   },
 
   setup() {
@@ -68,6 +71,7 @@ export default defineComponent({
         vehicles.value = response?.data || [];
       } catch (error) {
         console.log(error);
+        vehicles.value = [];
       }
     }
 

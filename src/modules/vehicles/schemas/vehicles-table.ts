@@ -39,22 +39,6 @@ const vehiclesTable = {
       }
     },
     {
-      label: 'Deuren',
-      id: 'aantal_deuren',
-      options: {
-        searchable: true,
-        sortable: 'aantal_deuren'
-      }
-    },
-    {
-      label: 'Zitplaatsen',
-      id: 'aantal_zitplaatsen',
-      options: {
-        searchable: true,
-        sortable: 'aantal_zitplaatsen'
-      }
-    },
-    {
       label: 'Kleur',
       id: 'eerste_kleur',
       options: {

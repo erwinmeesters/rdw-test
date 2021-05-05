@@ -10,7 +10,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     redirect: '/vehicles'
   },
-  ...vehiclesRoutes
+  ...vehiclesRoutes,
+  {
+    path: '/:catchAll(.*)',
+    component: load('NotFound')
+  }
 ];
 
 const router = createRouter({

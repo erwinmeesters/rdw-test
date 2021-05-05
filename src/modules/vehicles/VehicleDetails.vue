@@ -1,11 +1,14 @@
 <template>
   <div class="section">
-    <div class="overview">
+    <last-visited />
+    <router-link title="RDW" :to="'/'"> <i class="feather icon-arrow-left" />Terug naar overzicht </router-link>
+    <div v-if="vehicle.length" class="overview">
       <div v-for="(row, index) in vehicle" :key="index" class="row">
         <span class="name">{{ row.name }}</span>
         <span class="value">{{ row.value }}</span>
       </div>
     </div>
+    <div v-else class="empty">Voertuig niet gevonden / beschikbaar...</div>
   </div>
 </template>
 
@@ -13,8 +16,13 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import { getVehicle } from '@/services/vehiclesService';
 import { useRoute } from 'vue-router';
+import LastVisited from './components/LastVisited';
 
 export default defineComponent({
+  components: {
+    LastVisited
+  },
+
   setup() {
     const route: any = useRoute();
     const vehicle: any = ref([]);
@@ -25,6 +33,7 @@ export default defineComponent({
       try {
         const response = await getVehicle(id);
         const [data] = response.data;
+        updateLastVisited(data.kenteken);
         const details: any = [];
         Object.keys(data).map(key => {
           const detail = {
@@ -37,7 +46,22 @@ export default defineComponent({
         vehicle.value = details;
       } catch (error) {
         console.log(error);
+        vehicle.value = [];
       }
+    }
+
+    function updateLastVisited(id: string) {
+      let lastVisited: any = [];
+      const stored: any = localStorage.getItem('lastVisited');
+      if (stored) {
+        lastVisited = JSON.parse(stored);
+      }
+      lastVisited.unshift(id);
+      lastVisited = [...new Set(lastVisited)];
+      if (lastVisited.length > 3) {
+        lastVisited.pop();
+      }
+      localStorage.setItem('lastVisited', JSON.stringify(lastVisited));
     }
 
     onMounted(() => {
@@ -55,6 +79,7 @@ export default defineComponent({
 .overview {
   display: flex;
   flex-direction: column;
+  margin-top: 2em;
 }
 .row {
   display: flex;
@@ -72,5 +97,10 @@ export default defineComponent({
   .value {
     flex: 1;
   }
+}
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

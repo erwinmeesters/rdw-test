@@ -40,7 +40,10 @@ export default {
 .search {
   position: relative;
   display: flex;
-  width: 350px;
+  width: 200px;
+  @media screen and (min-width: 768px) {
+    width: 350px;
+  }
   input {
     width: 100%;
   }

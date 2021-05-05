@@ -2,7 +2,9 @@
   <div class="header">
     <nav class="navigation">
       <div class="logo">
-        <router-link title="Overzicht" :to="'/'"> Overzicht </router-link>
+        <router-link title="RDW" :to="'/'">
+          <img :src="require('@/assets/images/logo.svg')" />
+        </router-link>
       </div>
       <!-- <navigation /> -->
     </nav>
@@ -28,6 +30,7 @@ export default defineComponent({
   align-items: center;
   justify-content: flex-end;
   padding: 0 2em;
+  border-bottom: 1px solid $medgrey;
 
   .navigation {
     display: flex;
