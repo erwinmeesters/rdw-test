@@ -1,33 +1,36 @@
 <template>
-  <div v-if="tableData.length" class="notification is-info is-light">
+  <div v-if="vehicles.length" class="notification is-info is-light">
     <h2>Laatst bekeken</h2>
     <div class="vehicles-list">
-      <div class="row" v-for="row in tableData" :key="row.kenteken">
-        <span>{{ row.voertuigsoort }}</span>
-        <span>{{ row.merk }}</span>
-        <span>{{ row.handelsbenaming }}</span>
-        <span>{{ row.kenteken }}</span>
+      <div class="row" v-for="(row, index) in vehicles" :key="index">
+        <span>{{ row.data.voertuigsoort }}</span>
+        <span>{{ row.data.merk }}</span>
+        <span>{{ row.data.handelsbenaming }}</span>
+        <span>{{ row.data.kenteken }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, ref } from 'vue';
+import { defineComponent, onBeforeMount, ref, watchEffect } from 'vue';
 import { getVehicle } from '@/services/vehiclesService';
 
 export default defineComponent({
   setup() {
     const vehicles: any = ref([]);
-    const tableData = computed(() => vehicles.value);
+
+    watchEffect(() => {
+      vehicles.value = vehicles.value.sort((a: any, b: any) => (a.index > b.index ? 1 : -1));
+    });
 
     async function fetchVehicles(ids: any = []) {
       vehicles.value = [];
       try {
-        ids.map(async (id: string) => {
+        ids.map(async (id: string, index: number) => {
           const response = await getVehicle(id);
           const [data] = response?.data || {};
-          vehicles.value.push(data);
+          vehicles.value.push({ index, data });
         });
       } catch (error) {
         console.log(error);
@@ -43,7 +46,7 @@ export default defineComponent({
     });
 
     return {
-      tableData
+      vehicles
     };
   }
 });

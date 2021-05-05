@@ -129,7 +129,6 @@ export default defineComponent({
     const detailsSlot = computed(() => slots.details);
     const specialSlot = computed(() => slots.special);
     const tableData: any = computed(() => props.data);
-    console.log('tableData: ', tableData.value);
     const tableModel: any = computed(() => props.model);
     const renderedData: any = ref([]);
     const tableHead: any = ref({});
