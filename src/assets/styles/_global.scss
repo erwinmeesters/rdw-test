@@ -1,0 +1,279 @@
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: $font-family-primary;
+  color: $xdarkgrey;
+  font-size: 16px;
+  font-weight: 400;
+  height: 100vh;
+}
+
+#app {
+  height: 100vh;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.section {
+  padding: 3rem 1.5rem;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: $font-family-primary;
+}
+
+.datepicker .dropdown .input[readonly],
+.datepicker .dropdown .input[readonly]:focus,
+.input,
+.select select,
+.textarea,
+input,
+select,
+textarea {
+  border-radius: 0;
+  border: 1px solid $medgrey;
+  box-shadow: none;
+  height: 2.5em;
+  font-size: 1rem;
+  outline: none;
+  padding: 5px;
+  flex: 1 1 auto;
+}
+
+label,
+.label {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 2em;
+  margin-bottom: 0;
+  font-weight: bold;
+  position: relative;
+}
+
+.form-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 1em;
+
+  label {
+    flex: 1;
+  }
+
+  .form-field {
+    flex: 1;
+  }
+}
+
+.button,
+button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: none;
+  display: inline-flex;
+  font-size: 1rem;
+  height: 2.5em;
+  line-height: 1.5;
+  position: relative;
+  vertical-align: top;
+  background-color: $white;
+  border-color: $medgrey;
+  border-width: 1px;
+  color: $xdarkgrey;
+  cursor: pointer;
+  justify-content: center;
+  padding: calc(0.5em - 1px) 1em;
+  text-align: center;
+  white-space: nowrap;
+  transition: 0.2s ease-out;
+
+  &:focus {
+    outline: none;
+  }
+
+  &.is-primary {
+    background-color: $mc-orange;
+    border-color: transparent;
+    color: #fff;
+
+    &:hover {
+      background-color: darken($mc-orange, 10%);
+    }
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $font-family-primary;
+  margin-bottom: 0.5rem;
+}
+
+h1 {
+  font-size: 2em;
+  line-height: 1.3;
+  color: $xdark;
+  margin: 1em 0;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: $xdark;
+}
+
+h3,
+h4 {
+  font-size: 1.25em;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.emphasized {
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.hero {
+  background: $white;
+  height: calc(100% - #{$header-height});
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.title-link {
+  display: flex;
+  align-items: baseline;
+  word-break: break-word;
+
+  i {
+    margin-right: 0.5em;
+  }
+}
+
+.read-only-container {
+  word-break: break-word;
+}
+
+.modal {
+  z-index: 999999999;
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.no-pointer-events {
+  pointer-events: none;
+}
+
+.sticky-wrapper {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.redirect-link {
+  margin-bottom: 0.5em;
+}
+
+.error {
+  color: $danger;
+}
+
+.is-tag {
+  display: inline-flex;
+  justify-content: center;
+  background: $mc-orange;
+  padding: 3px;
+  color: $white;
+  border-radius: $radius-small;
+  font-size: 0.8em;
+  min-width: 60px;
+  &.is-success {
+    background: $mc-blue;
+  }
+  &.is-danger {
+    background: $danger;
+  }
+}
+
+.action-btns {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  flex-flow: row nowrap;
+
+  button {
+    margin: 0 3px;
+  }
+
+  &.is-small {
+    button {
+      font-size: 0.7em;
+    }
+  }
+
+  .delete-action:not([disabled]),
+  .disable-action:not([disabled]),
+  .default-action:not([disabled]) {
+    transition: 0.2s ease-out;
+    pointer-events: auto;
+  }
+
+  .delete-action:not([disabled]) {
+    border-color: $darkgrey;
+    &:hover {
+      background: $danger;
+      border-color: $danger;
+
+      i {
+        color: $white;
+      }
+    }
+  }
+
+  .disable-action:not([disabled]) {
+    border-color: $darkgrey;
+    &:hover {
+      background: $mc-orange;
+      border-color: $mc-orange;
+
+      i {
+        color: $white;
+      }
+    }
+  }
+
+  .default-action:not([disabled]) {
+    &:hover {
+      background: $mc-blue;
+      border-color: $mc-blue;
+      color: $white;
+
+      i {
+        color: $white;
+      }
+    }
+  }
+}
